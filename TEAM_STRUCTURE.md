@@ -348,6 +348,7 @@ dev_dependencies:
 | Role | Name | GitHub | Email |
 |------|------|--------|-------|
 | Developer 1 (UI/UX Lead) | | | |
+| Developer 1 (UI/UX Lead) | bosco (you) | | |
 | Developer 2 (Data Layer) | | | |
 | Developer 3 (Booking Flow) | | | |
 | Developer 4 (Payment) | | | |
