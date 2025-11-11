@@ -272,10 +272,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.4.13"
-      sha256: "34266009473bf71d748912da4bf62d439185226c03e01e2d9687bc65bbfcb713"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.4.15"
   shared_preferences_foundation:
     dependency: transitive
     description:
@@ -284,10 +280,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.5.4"
-      sha256: "1c33a907142607c40a7542768ec9badfd16293bac51da3a4482623d15845f88b"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.5.5"
   shared_preferences_linux:
     dependency: transitive
     description:
@@ -373,7 +365,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.4"
-    version: "0.7.6"
   typed_data:
     dependency: transitive
     description:
@@ -402,10 +393,10 @@ packages:
     dependency: transitive
     description:
       name: vm_service
-      sha256: "45caa6c5917fa127b5dbcfbd1fa60b14e583afdc08bfc96dda38886ca252eb60"
+      sha256: ddfa8d30d89985b96407efce8acbdd124701f96741f2d981ca860662f1c0dc02
       url: "https://pub.dev"
     source: hosted
-    version: "15.0.2"
+    version: "15.0.0"
   web:
     dependency: transitive
     description:
@@ -423,7 +414,5 @@ packages:
     source: hosted
     version: "1.1.0"
 sdks:
-  dart: ">=3.8.1 <4.0.0"
+  dart: ">=3.7.0 <4.0.0"
   flutter: ">=3.29.0"
-  dart: ">=3.9.0 <4.0.0"
-  flutter: ">=3.35.0"

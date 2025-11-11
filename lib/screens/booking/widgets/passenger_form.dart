@@ -32,7 +32,7 @@ class _PassengerFormState extends State<PassengerForm> {
             onSaved: (value) => age = int.tryParse(value ?? '0'),
           ),
           DropdownButtonFormField<String>(
-            initialValue: gender,
+            value: gender,
             items: ['Male', 'Female', 'Other']
                 .map((g) => DropdownMenuItem(value: g, child: Text(g)))
                 .toList(),
