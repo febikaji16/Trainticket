@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:trainticket/constants/strings.dart';
-import 'package:trainticket/screens/home/widgets/bottom_nav_bar.dart';
+import 'package:trainticket/models/station.dart';
+import 'package:trainticket/screens/home/widgets/app_drawer.dart';
+
 import 'package:trainticket/screens/home/widgets/popular_routes_widget.dart';
-import 'package:trainticket/screens/home/widgets/search_widget.dart';
+import 'package:trainticket/screens/home/widgets/station_search_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -12,15 +15,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final TextEditingController _fromController = TextEditingController();
-  final TextEditingController _toController = TextEditingController();
+  Station? _fromStation;
+  Station? _toStation;
   DateTime _selectedDate = DateTime.now();
-  int _currentIndex = 0;
 
   @override
   void dispose() {
-    _fromController.dispose();
-    _toController.dispose();
     super.dispose();
   }
 
@@ -39,18 +39,34 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _onSearch() {
-    // TODO: Implement search functionality
-    if (_fromController.text.isEmpty || _toController.text.isEmpty) {
+    // Validate input
+    if (_fromStation == null || _toStation == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please enter both source and destination stations'),
+          content: Text('Please select both source and destination stations'),
         ),
       );
       return;
     }
     
-    // Navigate to search results
-    // TODO: Implement navigation to search results screen
+    // Navigate to search results with query parameters
+    context.pushNamed('search', extra: {
+      'from': _fromStation!.stationCode,
+      'to': _toStation!.stationCode,
+      'date': _selectedDate.toString(),
+    });
+  }
+
+  void _onFromStationSelected(Station station) {
+    setState(() {
+      _fromStation = station;
+    });
+  }
+
+  void _onToStationSelected(Station station) {
+    setState(() {
+      _toStation = station;
+    });
   }
 
   @override
@@ -67,32 +83,27 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
+      drawer: const AppDrawer(),
       body: SingleChildScrollView(
         child: Column(
           children: [
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: SearchWidget(
-                fromController: _fromController,
-                toController: _toController,
+                fromStation: _fromStation,
+                toStation: _toStation,
                 selectedDate: _selectedDate,
                 onDateTap: () => _selectDate(context),
                 onSearchTap: _onSearch,
+                onFromStationSelected: _onFromStationSelected,
+                onToStationSelected: _onToStationSelected,
               ),
             ),
             const PopularRoutesWidget(),
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-          // TODO: Implement navigation between tabs
-        },
-      ),
+
     );
   }
 }

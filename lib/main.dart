@@ -1,23 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trainticket/constants/strings.dart';
 import 'package:trainticket/constants/theme.dart';
-import 'package:trainticket/routes/app_routes.dart';
+import 'package:trainticket/routes/router.dart';
+import 'package:trainticket/services/auth_service.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final prefs = await SharedPreferences.getInstance();
+  runApp(MyApp(prefs: prefs));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final SharedPreferences prefs;
+  
+  const MyApp({super.key, required this.prefs});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: AppStrings.appName,
-      theme: AppTheme.lightTheme,
-      onGenerateRoute: AppRoutes.generateRoute,
-      initialRoute: AppRoutes.home,
-      debugShowCheckedModeBanner: false,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => AuthService(prefs),
+        ),
+      ],
+      child: MaterialApp.router(
+        title: AppStrings.appName,
+        theme: AppTheme.lightTheme,
+        routerConfig: router,
+        debugShowCheckedModeBanner: false,
+      ),
     );
   }
 }
