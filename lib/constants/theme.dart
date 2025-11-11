@@ -9,7 +9,7 @@ class AppTheme {
         primary: AppColors.primary,
         secondary: AppColors.accent,
         surface: AppColors.card,
-        background: AppColors.background,
+        // background: AppColors.background,
         error: AppColors.error,
       ),
       
