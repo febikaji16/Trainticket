@@ -3,6 +3,9 @@ import 'package:intl/intl.dart';
 import 'package:trainticket/constants/colors.dart';
 import 'package:trainticket/data/mock_trains.dart';
 import 'package:trainticket/models/train.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:trainticket/services/auth_service.dart';
 
 class SearchResultsScreen extends StatelessWidget {
   final Map<String, dynamic> searchParams;
@@ -131,7 +134,37 @@ class SearchResultsScreen extends StatelessWidget {
                                     width: double.infinity,
                                     child: ElevatedButton(
                                       onPressed: () {
-                                        // TODO: Navigate to booking screen
+                                        // Check login status before booking
+                                        final auth = Provider.of<AuthService>(context, listen: false);
+                                        if (auth.isLoggedIn) {
+                                          // Navigate to passenger details with selected train and journey date
+                                          context.push('/passengerDetails', extra: {
+                                            'train': train,
+                                            'journeyDate': DateTime.parse(date),
+                                          });
+                                        } else {
+                                          // Prompt user to login
+                                          showDialog<void>(
+                                            context: context,
+                                            builder: (ctx) => AlertDialog(
+                                              title: const Text('Login required'),
+                                              content: const Text('You must be logged in to book a ticket.'),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () => Navigator.of(ctx).pop(),
+                                                  child: const Text('Cancel'),
+                                                ),
+                                                ElevatedButton(
+                                                  onPressed: () {
+                                                    Navigator.of(ctx).pop();
+                                                    context.push('/login');
+                                                  },
+                                                  child: const Text('Login'),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        }
                                       },
                                       child: const Text('Book Now'),
                                     ),

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../services/auth_service.dart';
+import 'package:trainticket/screens/home/widgets/app_drawer.dart';
+import 'package:trainticket/widgets/left_back_menu_appbar.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -29,7 +31,8 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       if (user != null && mounted) {
-        Navigator.of(context).pop();
+        // After successful login, go to Home screen
+        context.go('/');
       }
     } catch (e) {
       if (mounted) {
@@ -54,7 +57,8 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
+      appBar: const LeftBackMenuAppBar(title: 'Login'),
+      drawer: const AppDrawer(),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(

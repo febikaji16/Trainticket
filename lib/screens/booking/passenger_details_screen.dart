@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:trainticket/models/passenger.dart';
+import 'package:trainticket/models/train.dart';
 // import 'widgets/passenger_form.dart';
 import 'widgets/add_passenger_widget.dart';
 
 class PassengerDetailsScreen extends StatefulWidget {
-  const PassengerDetailsScreen({super.key});
+  final Train? train;
+  final DateTime? journeyDate;
+
+  const PassengerDetailsScreen({super.key, this.train, this.journeyDate});
 
   @override
   State<PassengerDetailsScreen> createState() => _PassengerDetailsScreenState();
@@ -11,6 +17,8 @@ class PassengerDetailsScreen extends StatefulWidget {
 
 class _PassengerDetailsScreenState extends State<PassengerDetailsScreen> {
   final List<Map<String, dynamic>> passengers = [];
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
 
   void addPassenger(Map<String, dynamic> passenger) {
     setState(() {
@@ -37,6 +45,19 @@ class _PassengerDetailsScreenState extends State<PassengerDetailsScreen> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
+            if (widget.train != null)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('${widget.train!.trainName} (${widget.train!.trainNumber})', style: const TextStyle(fontWeight: FontWeight.bold)),
+                    Text('Journey: ${widget.train!.sourceStation} → ${widget.train!.destinationStation}'),
+                    if (widget.journeyDate != null) Text('Date: ${widget.journeyDate!.toLocal().toIso8601String().split('T').first}'),
+                  ],
+                ),
+              ),
+
             AddPassengerWidget(onAdd: addPassenger),
             Expanded(
               child: ListView.builder(
@@ -55,11 +76,30 @@ class _PassengerDetailsScreenState extends State<PassengerDetailsScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            Text("Total Fare: ₹${calculateTotalFare()}",
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text("Total Fare: ₹${calculateTotalFare()}", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _emailController,
+              decoration: const InputDecoration(labelText: 'Contact Email (optional)'),
+            ),
+            TextField(
+              controller: _phoneController,
+              decoration: const InputDecoration(labelText: 'Contact Phone (optional)'),
+              keyboardType: TextInputType.phone,
+            ),
             const SizedBox(height: 10),
             ElevatedButton(
-              onPressed: () => Navigator.pushNamed(context, '/seatSelection'),
+              onPressed: () {
+                // convert passenger maps to model objects
+                final List<Passenger> modelPassengers = passengers.map((p) => Passenger.fromJson(p)).toList();
+                context.push('/seatSelection', extra: {
+                  'train': widget.train,
+                  'passengers': modelPassengers,
+                  'journeyDate': widget.journeyDate,
+                  'contactEmail': _emailController.text,
+                  'contactPhone': _phoneController.text,
+                });
+              },
               child: const Text("Continue to Seat Selection"),
             ),
           ],
