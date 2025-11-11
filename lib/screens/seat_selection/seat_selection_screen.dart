@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:trainticket/models/train.dart';
+import 'package:trainticket/models/passenger.dart';
+import 'package:go_router/go_router.dart';
 
 class SeatSelectionScreen extends StatefulWidget {
-  const SeatSelectionScreen({super.key});
+  final Train? train;
+  final List<Passenger>? passengers;
+  final DateTime? journeyDate;
+  final String? contactEmail;
+  final String? contactPhone;
+
+  const SeatSelectionScreen({super.key, this.train, this.passengers, this.journeyDate, this.contactEmail, this.contactPhone});
 
   @override
   State<SeatSelectionScreen> createState() => _SeatSelectionScreenState();
@@ -33,11 +42,22 @@ class _SeatSelectionScreenState extends State<SeatSelectionScreen> {
             const Spacer(),
             ElevatedButton(
               onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text(
-                        "Seat booked in $selectedClass class successfully!")));
+                // Move to payment screen with collected data
+                final train = widget.train;
+                final passengers = widget.passengers ?? <Passenger>[];
+                final journeyDate = widget.journeyDate;
+                final email = widget.contactEmail;
+                final phone = widget.contactPhone;
+                context.push('/payment', extra: {
+                  'train': train,
+                  'passengers': passengers,
+                  'travelClass': selectedClass,
+                  'journeyDate': journeyDate,
+                  'contactEmail': email,
+                  'contactPhone': phone,
+                });
               },
-              child: const Text("Confirm Booking"),
+              child: const Text("Confirm & Pay"),
             ),
           ],
         ),

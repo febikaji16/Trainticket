@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:trainticket/constants/strings.dart';
 
 class AppDrawer extends StatelessWidget {
@@ -48,7 +49,7 @@ class AppDrawer extends StatelessWidget {
             title: const Text(AppStrings.home),
             onTap: () {
               Navigator.pop(context);
-              // Already on home screen
+              Future.microtask(() => context.go('/'));
             },
           ),
           ListTile(
@@ -56,7 +57,7 @@ class AppDrawer extends StatelessWidget {
             title: const Text(AppStrings.myBookings),
             onTap: () {
               Navigator.pop(context);
-              // TODO: Navigate to my bookings
+              Future.microtask(() => context.go('/my-bookings'));
             },
           ),
           const Divider(),
@@ -65,7 +66,7 @@ class AppDrawer extends StatelessWidget {
             title: const Text('Settings'),
             onTap: () {
               Navigator.pop(context);
-              // TODO: Navigate to settings
+              Future.microtask(() => context.go('/settings'));
             },
           ),
           ListTile(
@@ -73,7 +74,7 @@ class AppDrawer extends StatelessWidget {
             title: const Text('Help & Support'),
             onTap: () {
               Navigator.pop(context);
-              // TODO: Navigate to help
+              Future.microtask(() => context.go('/help'));
             },
           ),
           ListTile(
@@ -81,7 +82,7 @@ class AppDrawer extends StatelessWidget {
             title: const Text('About'),
             onTap: () {
               Navigator.pop(context);
-              // TODO: Navigate to about
+              Future.microtask(() => context.go('/about'));
             },
           ),
         ],

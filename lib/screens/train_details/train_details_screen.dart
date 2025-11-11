@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'widgets/availability_widget.dart';
 import 'widgets/fare_breakdown_widget.dart';
 
@@ -40,7 +41,8 @@ class TrainDetailsScreen extends StatelessWidget {
             Center(
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, '/passengerDetails');
+                  // Use go_router to navigate to passenger details
+                  context.push('/passengerDetails');
                 },
                 child: const Text("Book Now"),
               ),

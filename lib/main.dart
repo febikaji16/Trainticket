@@ -5,6 +5,8 @@ import 'package:trainticket/constants/strings.dart';
 import 'package:trainticket/constants/theme.dart';
 import 'package:trainticket/routes/router.dart';
 import 'package:trainticket/services/auth_service.dart';
+import 'package:trainticket/services/storage_service.dart';
+import 'package:trainticket/providers/booking_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,6 +25,12 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(
           create: (_) => AuthService(prefs),
+        ),
+        Provider(
+          create: (_) => StorageService(prefs),
+        ),
+        ChangeNotifierProvider(
+          create: (ctx) => BookingProvider(storage: Provider.of<StorageService>(ctx, listen: false)),
         ),
       ],
       child: MaterialApp.router(
