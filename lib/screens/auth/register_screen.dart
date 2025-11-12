@@ -35,7 +35,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
 
       if (user != null && mounted) {
-        Navigator.of(context).pop();
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Registration successful! Welcome aboard!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        // Navigate to home page after successful registration
+        context.go('/');
       }
     } catch (e) {
       if (mounted) {
