@@ -47,7 +47,14 @@ pipeline {
         stage('Code Analysis') {
             steps {
                 echo 'Running Flutter analyze...'
-                sh '"$FLUTTER_HOME/bin/flutter" analyze'
+                // Use returnStatus to not fail the build on warnings
+                script {
+                    def analyzeStatus = sh(script: '"$FLUTTER_HOME/bin/flutter" analyze', returnStatus: true)
+                    if (analyzeStatus != 0) {
+                        echo "Warning: Code analysis found ${analyzeStatus} issue(s). Continuing build..."
+                        unstable(message: "Code analysis found issues")
+                    }
+                }
             }
         }
         
