@@ -3,7 +3,7 @@ pipeline {
     
     environment {
         // Flutter installation path (adjust based on your Jenkins setup)
-        FLUTTER_HOME = "${WORKSPACE}/flutter"
+        FLUTTER_HOME = "${HOME}/.flutter-sdk"
         PATH = "${FLUTTER_HOME}/bin:${PATH}"
     }
     
@@ -23,15 +23,15 @@ pipeline {
                     sh '''
                         if [ ! -d "$FLUTTER_HOME" ]; then
                             echo "Installing Flutter..."
-                            git clone https://github.com/flutter/flutter.git -b stable --depth 1 $FLUTTER_HOME
+                            git clone https://github.com/flutter/flutter.git -b stable --depth 1 "$FLUTTER_HOME"
                         else
                             echo "Flutter already installed, updating..."
-                            cd $FLUTTER_HOME
+                            cd "$FLUTTER_HOME"
                             git pull
                         fi
                         
-                        flutter --version
-                        flutter doctor
+                        "$FLUTTER_HOME/bin/flutter" --version
+                        "$FLUTTER_HOME/bin/flutter" doctor -v
                     '''
                 }
             }
@@ -40,21 +40,21 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 echo 'Installing Flutter dependencies...'
-                sh 'flutter pub get'
+                sh '"$FLUTTER_HOME/bin/flutter" pub get'
             }
         }
         
         stage('Code Analysis') {
             steps {
                 echo 'Running Flutter analyze...'
-                sh 'flutter analyze'
+                sh '"$FLUTTER_HOME/bin/flutter" analyze'
             }
         }
         
         stage('Run Tests') {
             steps {
                 echo 'Running unit tests...'
-                sh 'flutter test'
+                sh '"$FLUTTER_HOME/bin/flutter" test'
             }
         }
         
@@ -64,7 +64,7 @@ pipeline {
             }
             steps {
                 echo 'Building Android APK...'
-                sh 'flutter build apk --release'
+                sh '"$FLUTTER_HOME/bin/flutter" build apk --release'
             }
         }
         
@@ -74,7 +74,7 @@ pipeline {
             }
             steps {
                 echo 'Building Android App Bundle...'
-                sh 'flutter build appbundle --release'
+                sh '"$FLUTTER_HOME/bin/flutter" build appbundle --release'
             }
         }
         
