@@ -114,38 +114,19 @@ pipeline {
         }
         
         stage('Build Docker Image') {
-            when {
-                anyOf {
-                    branch 'main'
-                    branch 'develop'
-                }
-            }
             steps {
                 echo 'Building Docker image...'
                 script {
-                    // Build Docker image with build number tag
+                    // Build Docker image with build number tag and latest
                     sh """
                         docker build -t ${DOCKER_IMAGE}:${BUILD_NUMBER} .
                         docker tag ${DOCKER_IMAGE}:${BUILD_NUMBER} ${DOCKER_IMAGE}:latest
                     """
-                    
-                    // Tag for branch
-                    if (env.BRANCH_NAME == 'main') {
-                        sh "docker tag ${DOCKER_IMAGE}:${BUILD_NUMBER} ${DOCKER_IMAGE}:production"
-                    } else {
-                        sh "docker tag ${DOCKER_IMAGE}:${BUILD_NUMBER} ${DOCKER_IMAGE}:${env.BRANCH_NAME}"
-                    }
                 }
             }
         }
         
         stage('Push to Docker Registry') {
-            when {
-                anyOf {
-                    branch 'main'
-                    branch 'develop'
-                }
-            }
             steps {
                 echo 'Pushing Docker image to registry...'
                 script {
@@ -160,21 +141,12 @@ pipeline {
                             docker push ${DOCKER_IMAGE}:${BUILD_NUMBER}
                             docker push ${DOCKER_IMAGE}:latest
                         """
-                        
-                        if (env.BRANCH_NAME == 'main') {
-                            sh "docker push ${DOCKER_IMAGE}:production"
-                        } else {
-                            sh "docker push ${DOCKER_IMAGE}:${env.BRANCH_NAME}"
-                        }
                     }
                 }
             }
         }
         
         stage('Deploy Docker Container') {
-            when {
-                branch 'develop'
-            }
             steps {
                 echo 'Deploying Docker container to test environment...'
                 script {
