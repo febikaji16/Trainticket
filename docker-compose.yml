@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  trainticket-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: trainticket-app
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.trainticket.rule=Host(`trainticket.local`)"

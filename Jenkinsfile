@@ -5,6 +5,11 @@ pipeline {
         // Flutter installation path (adjust based on your Jenkins setup)
         FLUTTER_HOME = "${HOME}/.flutter-sdk"
         PATH = "${FLUTTER_HOME}/bin:${PATH}"
+        
+        // Docker configuration
+        DOCKER_IMAGE = "febikaji16/trainticket-app" // TODO: Replace YOUR_DOCKERHUB_USERNAME
+        DOCKER_REGISTRY = "docker.io"
+        DOCKER_CREDENTIALS_ID = "dockerhub-credentials"
     }
     
     stages {
@@ -107,11 +112,93 @@ pipeline {
                 sh 'echo "Deploy to Firebase App Distribution or TestFlight"'
             }
         }
+        
+        stage('Build Docker Image') {
+            when {
+                anyOf {
+                    branch 'main'
+                    branch 'develop'
+                }
+            }
+            steps {
+                echo 'Building Docker image...'
+                script {
+                    // Build Docker image with build number tag
+                    sh """
+                        docker build -t ${DOCKER_IMAGE}:${BUILD_NUMBER} .
+                        docker tag ${DOCKER_IMAGE}:${BUILD_NUMBER} ${DOCKER_IMAGE}:latest
+                    """
+                    
+                    // Tag for branch
+                    if (env.BRANCH_NAME == 'main') {
+                        sh "docker tag ${DOCKER_IMAGE}:${BUILD_NUMBER} ${DOCKER_IMAGE}:production"
+                    } else {
+                        sh "docker tag ${DOCKER_IMAGE}:${BUILD_NUMBER} ${DOCKER_IMAGE}:${env.BRANCH_NAME}"
+                    }
+                }
+            }
+        }
+        
+        stage('Push to Docker Registry') {
+            when {
+                anyOf {
+                    branch 'main'
+                    branch 'develop'
+                }
+            }
+            steps {
+                echo 'Pushing Docker image to registry...'
+                script {
+                    // Login and push to Docker registry
+                    withCredentials([usernamePassword(
+                        credentialsId: "${DOCKER_CREDENTIALS_ID}",
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PASS'
+                    )]) {
+                        sh """
+                            echo \$DOCKER_PASS | docker login ${DOCKER_REGISTRY} -u \$DOCKER_USER --password-stdin
+                            docker push ${DOCKER_IMAGE}:${BUILD_NUMBER}
+                            docker push ${DOCKER_IMAGE}:latest
+                        """
+                        
+                        if (env.BRANCH_NAME == 'main') {
+                            sh "docker push ${DOCKER_IMAGE}:production"
+                        } else {
+                            sh "docker push ${DOCKER_IMAGE}:${env.BRANCH_NAME}"
+                        }
+                    }
+                }
+            }
+        }
+        
+        stage('Deploy Docker Container') {
+            when {
+                branch 'develop'
+            }
+            steps {
+                echo 'Deploying Docker container to test environment...'
+                script {
+                    // Stop and remove old container if exists
+                    sh """
+                        docker stop ${DOCKER_IMAGE}-test || true
+                        docker rm ${DOCKER_IMAGE}-test || true
+                        
+                        # Run new container
+                        docker run -d \\
+                            -p 8080:80 \\
+                            --name ${DOCKER_IMAGE}-test \\
+                            --restart unless-stopped \\
+                            ${DOCKER_IMAGE}:${BUILD_NUMBER}
+                    """
+                }
+            }
+        }
     }
     
     post {
         success {
             echo 'Pipeline completed successfully!'
+            echo "Docker image built: ${DOCKER_IMAGE}:${BUILD_NUMBER}"
             // Optional: Send notification (Slack, Email, etc.)
         }
         failure {
@@ -120,6 +207,8 @@ pipeline {
         }
         always {
             echo 'Cleaning up workspace...'
+            // Clean up old Docker images to save space
+            sh "docker image prune -f --filter 'until=24h' || true"
             cleanWs()
         }
     }
