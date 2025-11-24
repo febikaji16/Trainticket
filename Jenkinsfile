@@ -152,13 +152,13 @@ pipeline {
                 script {
                     // Stop and remove old container if exists
                     sh """
-                        docker stop ${DOCKER_IMAGE}-test || true
-                        docker rm ${DOCKER_IMAGE}-test || true
+                        docker stop trainticket-app || true
+                        docker rm trainticket-app || true
                         
                         # Run new container
                         docker run -d \\
-                            -p 8080:80 \\
-                            --name ${DOCKER_IMAGE}-test \\
+                            -p 3000:80 \\
+                            --name trainticket-app \\
                             --restart unless-stopped \\
                             ${DOCKER_IMAGE}:${BUILD_NUMBER}
                     """
