@@ -4,10 +4,10 @@ pipeline {
     environment {
         // Flutter installation path (adjust based on your Jenkins setup)
         FLUTTER_HOME = "${HOME}/.flutter-sdk"
-        PATH = "${FLUTTER_HOME}/bin:${PATH}"
+        PATH = "/usr/local/bin:${FLUTTER_HOME}/bin:${PATH}"
         
         // Docker configuration
-        DOCKER_IMAGE = "febikaji16/trainticket-app" // TODO: Replace YOUR_DOCKERHUB_USERNAME
+        DOCKER_IMAGE = "febikaji16/trainticket-app"
         DOCKER_REGISTRY = "docker.io"
         DOCKER_CREDENTIALS_ID = "dockerhub-credentials"
     }
